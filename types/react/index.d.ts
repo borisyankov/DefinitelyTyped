@@ -2152,7 +2152,7 @@ declare namespace React {
     interface SVGLineElementAttributes<T> extends SVGProps<T> {}
     interface SVGTextElementAttributes<T> extends SVGProps<T> {}
 
-    interface MathMLProps<T> extends MathMLAttributes<T> {}
+    interface MathMLProps<T extends MathMLElement> extends MathMLAttributes<T> {}
 
     interface DOMAttributes<T> {
         children?: ReactNode | undefined;
@@ -3732,7 +3732,7 @@ declare namespace React {
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/MathML/Global_attributes
-    interface MathMLAttributes<T> extends DOMAttributes<T> {
+    interface MathMLAttributes<T extends MathMLElement> extends DOMAttributes<T> {
         className?: string | undefined;
         dir?: 'ltr' | 'rtl' | undefined;
         displaystyle?: boolean | undefined;
@@ -3746,6 +3746,15 @@ declare namespace React {
         style?: CSSProperties | undefined;
         tabindex?: number | undefined;
     }
+
+    // Individual MathML elements are described here:
+    //
+    // https://developer.mozilla.org/en-US/docs/Web/MathML/Element/math
+    //
+    interface MathMLMathAttributes extends MathMLAttributes<MathMLMathElement> {
+        display?: 'block' | 'inline'
+    }
+
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
         allowFullScreen?: boolean | undefined;
@@ -4206,7 +4215,7 @@ declare namespace React {
             view: React.SVGProps<SVGViewElement>;
 
             // MathML
-            match: 
+            math: React.MathMLProps<MathMLMathElement>;
         }
     }
 }
