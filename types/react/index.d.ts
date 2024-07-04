@@ -3788,6 +3788,10 @@ declare namespace React {
     interface MathMLMphantomElement extends MathMLAttributes<MathMLMphantomElement> {}
     interface MathMLMrootElement extends MathMLAttributes<MathMLMrootElement> {}
     interface MathMLMrowElement extends MathMLAttributes<MathMLMrowElement> {}
+    interface MathMLMsElement extends MathMLAttributes<MathMLMrowElement> {
+        lquote?: string | undefined;
+        rquote?: string | undefined;
+    }
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
         allowFullScreen?: boolean | undefined;
@@ -4260,6 +4264,7 @@ declare namespace React {
             mphantom: React.MathMLProps<MathMLMphantomElement>;
             mroot: React.MathMLProps<MathMLMrootElement>;
             mrow: React.MathMLProps<MathMLMrowElement>;
+            ms: React.MathMLProps<MathMLMsElement>;
         }
     }
 }
