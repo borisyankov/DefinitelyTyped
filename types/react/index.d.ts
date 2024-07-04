@@ -3761,6 +3761,7 @@ declare namespace React {
     interface MathMLMIElement extends MathMLAttributes<MathMLMIElement> {
         mathvariant: 'normal';
     }
+    interface MathMLMMultiScriptsElement extends MathMLAttributes<MathMLMMultiScriptsElement> {}
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
         allowFullScreen?: boolean | undefined;
@@ -4225,6 +4226,7 @@ declare namespace React {
             merror: React.MathMLProps<MathMLMErrorElement>;
             mfrac: React.MathMLProps<MathMLMFracElement>;
             mi: React.MathMLProps<MathMLMIElement>;
+            mmultiscripts: React.MathMLProps<MathMLMMultiScriptsElement>;
         }
     }
 }
