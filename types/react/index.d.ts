@@ -3807,6 +3807,7 @@ declare namespace React {
         columnspan?: number | string | undefined;
         rowspan?: number | string | undefined;
     }
+    interface MathMLMtextElement extends MathMLAttributes<MathMLMtextElement> {}
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
         allowFullScreen?: boolean | undefined;
@@ -4288,6 +4289,7 @@ declare namespace React {
             msup: React.MathMLProps<MathMLMsupElement>;
             mtable: React.MathMLProps<MathMLMtableElement>;
             mtd: React.MathMLProps<MathMLMtdElement>;
+            mtext: React.MathMLProps<MathMLMtextElement>;
         }
     }
 }
