@@ -3812,6 +3812,10 @@ declare namespace React {
     interface MathMLMunderElement extends MathMLAttributes<MathMLMunderElement> {
         accentunder?: boolean | undefined;
     }
+    interface MathMLMunderoverElement extends MathMLAttributes<MathMLElement> {
+        accent?: boolean | undefined;
+        accentunder?: boolean | undefined;
+    }
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
         allowFullScreen?: boolean | undefined;
@@ -4296,6 +4300,7 @@ declare namespace React {
             mtext: React.MathMLProps<MathMLMtextElement>;
             mtr: React.MathMLProps<MathMLMtrElement>;
             munder: React.MathMLProps<MathMLMunderElement>;
+            munderover: React.MathMLProps<MathMLMunderoverElement>;
         }
     }
 }
