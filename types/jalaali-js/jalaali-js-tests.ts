@@ -5,7 +5,9 @@ import {
     isLeapJalaaliYear,
     isValidJalaaliDate,
     j2d,
-    jalaaliMonthLength, jalaaliToDateObject, jalaaliWeek,
+    jalaaliMonthLength,
+    jalaaliToDateObject,
+    jalaaliWeek,
     jalCal,
     toGregorian,
     toJalaali,
@@ -41,6 +43,6 @@ g2d(2016, 4, 11); // 2457490
 
 d2g(2457490); // { gy: 2016, gm: 4, gd: 11 }
 
-jalaaliToDateObject(1400, 4, 30) // new Date(2021, 6, 21)
+jalaaliToDateObject(1400, 4, 30); // new Date(2021, 6, 21)
 
-jalaaliWeek(1400, 4, 30) // { saturday: { jy: 1400, jm: 4, jd: 26 }, friday: { jy: 1400, jm: 5, jd: 1 } }
+jalaaliWeek(1400, 4, 30); // { saturday: { jy: 1400, jm: 4, jd: 26 }, friday: { jy: 1400, jm: 5, jd: 1 } }
