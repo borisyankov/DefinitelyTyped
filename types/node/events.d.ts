@@ -106,6 +106,7 @@ declare module "events" {
     type Args<K, T> = T extends DefaultEventMap ? AnyRest : (
         K extends keyof T ? T[K] : never
     );
+    type EventMapKey<T> = T extends DefaultEventMap ? string | symbol : keyof T;
     type Key<K, T> = T extends DefaultEventMap ? string | symbol : K | keyof T;
     type Key2<K, T> = T extends DefaultEventMap ? string | symbol : K & keyof T;
     type Listener<K, T, F> = T extends DefaultEventMap ? F : (
@@ -116,6 +117,9 @@ declare module "events" {
     );
     type Listener1<K, T> = Listener<K, T, (...args: any[]) => void>;
     type Listener2<K, T> = Listener<K, T, Function>;
+    type EventMapValue<T extends EventMap<T>, K> = T extends DefaultEventMap ? any[]
+        : K extends keyof T ? T[K]
+        : never;
 
     /**
      * The `EventEmitter` class is defined and exposed by the `node:events` module:
@@ -131,6 +135,7 @@ declare module "events" {
      * @since v0.1.26
      */
     class EventEmitter<T extends EventMap<T> = DefaultEventMap> {
+        declare private _type?: T;
         constructor(options?: EventEmitterOptions);
 
         [EventEmitter.captureRejectionSymbol]?<K>(error: Error, event: Key<K, T>, ...args: Args<K, T>): void;
@@ -214,9 +219,15 @@ declare module "events" {
          * ```
          * @since v11.13.0, v10.16.0
          */
-        static once(
-            emitter: NodeJS.EventEmitter,
-            eventName: string | symbol,
+
+        static once<T extends EventMap<T> = DefaultEventMap, K extends EventMapKey<T> = any>(
+            emitter: EventEmitter<T>,
+            eventName: K,
+            options?: StaticEventEmitterOptions,
+        ): Promise<EventMapValue<T, K>>;
+        static once<T extends EventMap<T> = DefaultEventMap, K extends EventMapKey<T> = any>(
+            emitter: NodeJS.EventEmitter<T>,
+            eventName: K,
             options?: StaticEventEmitterOptions,
         ): Promise<any[]>;
         static once(emitter: EventTarget, eventName: string, options?: StaticEventEmitterOptions): Promise<any[]>;
@@ -300,9 +311,14 @@ declare module "events" {
          * @since v13.6.0, v12.16.0
          * @return An `AsyncIterator` that iterates `eventName` events emitted by the `emitter`
          */
-        static on(
-            emitter: NodeJS.EventEmitter,
-            eventName: string | symbol,
+        static on<T extends EventMap<T> = DefaultEventMap, K extends EventMapKey<T> = any>(
+            emitter: EventEmitter<T>,
+            eventName: K,
+            options?: StaticEventEmitterIteratorOptions,
+        ): NodeJS.AsyncIterator<EventMapValue<T, K>, EventMapValue<T, K>>;
+        static on<T extends EventMap<T> = DefaultEventMap, K extends EventMapKey<T> = any>(
+            emitter: NodeJS.EventEmitter<T>,
+            eventName: K,
             options?: StaticEventEmitterIteratorOptions,
         ): NodeJS.AsyncIterator<any[]>;
         static on(
@@ -768,7 +784,7 @@ declare module "events" {
                 setMaxListeners(n: number): this;
                 /**
                  * Returns the current max listener value for the `EventEmitter` which is either
-                 * set by `emitter.setMaxListeners(n)` or defaults to {@link EventEmitter.defaultMaxListeners}.
+                 * set by `emitter.setMaxListeners(n)` or defaults to {@link defaultMaxListeners}.
                  * @since v1.0.0
                  */
                 getMaxListeners(): number;

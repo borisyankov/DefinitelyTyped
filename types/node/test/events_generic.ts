@@ -8,6 +8,8 @@ interface T {
     event5: unknown[];
 }
 
+type NotAny<T> = 0 extends T & 1 ? never : T;
+
 const emitter = new events.EventEmitter<T>();
 declare const listener1: (...args: T["event1"]) => void;
 declare const listener2: (...args: T["event2"]) => void;
@@ -19,6 +21,21 @@ declare const event2: "event2";
 declare const event3: "event3";
 declare const event4: "event4";
 declare const event5: "event5";
+// eslint-disable-next-line @definitelytyped/no-unnecessary-generics
+declare function expectNotAnyOrNeverArray<T extends unknown[]>(
+    input: 0 extends T & 1 ? never : T extends (infer U)[] ? [U] extends [never] ? never : NotAny<U>[] : T,
+): void;
+// eslint-disable-next-line @definitelytyped/no-unnecessary-generics
+declare function expectNotAny<T>(input: NotAny<T>): void;
+
+{
+    // @ts-expect-error
+    expectNotAnyOrNeverArray([] as any[]);
+    // @ts-expect-error
+    expectNotAnyOrNeverArray([]);
+
+    expectNotAnyOrNeverArray(["test"]);
+}
 
 {
     let result: events.EventEmitter<T>;
@@ -93,6 +110,7 @@ declare const event5: "event5";
 
     result = events.EventEmitter.defaultMaxListeners;
 
+    // @ts-expect-error
     const promise: Promise<any[]> = events.once(new events.EventEmitter<T>(), "error");
 
     result = emitter.getMaxListeners();
@@ -112,10 +130,15 @@ declare const event5: "event5";
 {
     let result: Promise<number[]>;
 
+    // @ts-expect-error
     result = events.once(emitter, event1);
+    // @ts-expect-error
     result = events.once(emitter, event2);
+    // this is still valid, because event3 args are typed as `never[]`
     result = events.once(emitter, event3);
+    // @ts-expect-error
     result = events.once(emitter, event4);
+    // @ts-expect-error
     result = events.once(emitter, event5);
 
     emitter.emit("event1", "hello", 42);
@@ -246,4 +269,87 @@ declare const event5: "event5";
     emitter.emit(s1, "hello", false);
     // @ts-expect-error
     emitter.emit(s2, "hello", false);
+}
+
+{
+    const result1: Promise<[string, number]> = events.once(emitter, event1);
+    const result2: Promise<[boolean]> = events.once(emitter, event2);
+    const result3: Promise<[]> = events.once(emitter, event3);
+    const result4: Promise<string[]> = events.once(emitter, event4);
+    const result5: Promise<unknown[]> = events.once(emitter, event5);
+}
+
+{
+    const iter = events.on(emitter, event1);
+    iter.next().then(({ value }) => {
+        expectNotAnyOrNeverArray(value);
+        const result: [string, number] = value;
+        // @ts-expect-error
+        const badResult: [boolean] = value;
+    });
+    const result: Promise<IteratorResult<[string, number], [string, number]>> = iter.next();
+}
+
+{
+    const iter = events.on(new events.EventEmitter(), "error");
+    const result: Promise<IteratorResult<number[], number[]>> = iter.next();
+}
+
+{
+    interface EventMap {
+        "no-parameters": [];
+        "with-parameters": [n: number, s: string];
+    }
+
+    class DerivedEmitter extends events.EventEmitter<EventMap> {}
+    const derivedEmitter = new DerivedEmitter();
+    const dA = events.on(derivedEmitter, "no-parameters");
+    dA.next().then(({ value }) => {
+        expectNotAny(value);
+        const result: [] = value;
+    });
+
+    const dB = events.on(derivedEmitter, "with-parameters");
+    dB.next().then(({ value }) => {
+        expectNotAny(value);
+        const result: [n: number, s: string] = value;
+    });
+
+    events.once(derivedEmitter, "no-parameters").then((result) => {
+        expectNotAny(result);
+        const typedResult: [] = result;
+    });
+    events.once(derivedEmitter, "with-parameters").then((result) => {
+        expectNotAny(result);
+        const typedResult: [n: number, s: string] = result;
+    });
+}
+
+{
+    interface EventMap {
+        "no-parameters": [];
+        "with-parameters": [n: number, s: string];
+    }
+    class DerivedEmitterGeneric<Events extends Record<keyof Events, unknown[]>> extends events.EventEmitter<Events> {}
+    const derivedEmitter = new DerivedEmitterGeneric<EventMap>();
+    const dA = events.on(derivedEmitter, "no-parameters");
+    dA.next().then(({ value }) => {
+        expectNotAny(value);
+        const result: [] = value;
+    });
+
+    const dB = events.on(derivedEmitter, "with-parameters");
+    dB.next().then(({ value }) => {
+        expectNotAny(value);
+        const result: [n: number, s: string] = value;
+    });
+
+    events.once(derivedEmitter, "no-parameters").then((result) => {
+        expectNotAny(result);
+        const typedResult: [] = result;
+    });
+    events.once(derivedEmitter, "with-parameters").then((result) => {
+        expectNotAny(result);
+        const typedResult: [n: number, s: string] = result;
+    });
 }
