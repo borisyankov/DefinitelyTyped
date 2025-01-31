@@ -38,10 +38,7 @@ declare module "stream" {
         ): T;
     }
     namespace Stream {
-        export {
-            Stream,
-            streamPromises as promises,
-        };
+        export { Stream, streamPromises as promises };
     }
     namespace Stream {
         interface StreamOptions<T extends Stream> extends Abortable {
