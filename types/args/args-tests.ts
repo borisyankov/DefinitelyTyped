@@ -64,5 +64,19 @@ args.parse(["~/bin/node", "~/dir", "arg", "--param"], {
 
 args.showHelp();
 args.showVersion();
+args.handleType('example string');
+args.handleType([]);
+args.handleType(parseInt);
+args.generateExamples();
+args.runCommand({
+	usage: "serve",
+	init: (name: string, sub: string[], options: {verbose: boolean}): void => {},
+},
+	{verbose: true});
+args.isDefined('serve', 'commands');
 
-const x: string = args.sub[0];
+
+// args.sub can possibly be undefined or null
+if (args.sub != null) {
+  const x: string = args.sub[0];
+};
